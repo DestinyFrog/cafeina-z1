@@ -18,6 +18,44 @@ function Z13Plugin:new(h)
     return obj
 end
 
+function Z13Plugin:measureBounds()
+    local min_x = 0
+    local min_y = 0
+    local min_z = 0
+    local max_x = 0
+    local max_y = 0
+    local max_z = 0
+
+    for _, atom in ipairs(self.atoms) do
+        local x = atom["x"]
+        local y = atom["y"]
+        local z = atom["z"]
+
+        if atom["symbol"] == "X" then
+            goto continue
+        end
+
+        if x > max_x then max_x = x end
+        if y > max_y then max_y = y end
+        if z > max_z then max_z = z end
+        if x < min_x then min_x = x end
+        if y < min_y then min_y = y end
+        if z < min_z then min_z = z end
+
+        ::continue::
+    end
+
+    self.width = max_x + math.abs(min_x)
+    self.height = max_y + math.abs(min_y)
+    self.depth = max_z + math.abs(min_z)
+
+    self.center_x = min_x + self.width/2
+    self.center_y = min_y + self.height/2
+    self.center_z = min_z + self.depth/2
+
+    return nil
+end
+
 ---calcula posiçao dos atomos
 ---@param atom Atom?
 ---@param dad_atom Atom?
@@ -50,9 +88,9 @@ function Z13Plugin:calcAtomsPosition(atom, dad_atom, ligation)
         z = dad_atom.z + radius * math.sin(angle_theta_rad) * math.sin(angle_phi_rad)
     end
 
-    atom.x = x
-    atom.y = y
-    atom.z = z
+    atom.x = math.floor(x)
+    atom.y = math.floor(y)
+    atom.z = math.floor(z)
     atom.already = true
 
     for idx, lig in ipairs(atom.ligations) do
@@ -62,11 +100,15 @@ end
 
 function Z13Plugin:drawAtom()
     for _, atom in ipairs(self.atoms) do
-        if symbol == "X" then
+        if atom.symbol == "X" then
             goto continue
         end
 
-        self.z13:add(atom.color, atom.atomic_radius, atom.x, atom.y, atom.z)
+        self.z13:add(atom.color, atom.atomic_radius,
+            atom.x - self.center_x,
+            atom.y + self.height,
+            atom.z - self.center_z
+        )
         ::continue::
     end
     return nil
@@ -76,6 +118,7 @@ end
 ---@return string?, Error?
 function Z13Plugin:build()
     self:calcAtomsPosition()
+    self:measureBounds()
 
     local err = self:drawAtom()
     if err ~= nil then return nil, err end
