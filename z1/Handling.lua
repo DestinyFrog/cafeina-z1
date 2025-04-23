@@ -88,10 +88,11 @@ function Handling:handle_line_atom(line)
         end
 
         if not self.ligations[ligation_key].from then
-            table.insert(atom.ligations, self.ligations[ligation_key])
             self.ligations[ligation_key].from = atom
+            atom:add_ligation(self.ligations[ligation_key])
         else
             self.ligations[ligation_key].to = atom
+            atom:set_parent(self.ligations[ligation_key])
         end
 
         ligation_key = my_Split_string()
@@ -165,18 +166,16 @@ end
 ---@param line string
 ---@return Error?
 function Handling:handle_line_pattern(line)
-    local text = self:remove_comment(line)
-
-    local params = self:split_params(text)
-    local pattern_name = params[2]
+    local pattern_name = Match_remove_substr(line, "@p%s%a+", "@p%s")
 
     local pattern = io.open("patterns/" .. pattern_name .. ".pre.z1", "r")
     if pattern == nil then
         return Error:new("Pattern '" .. pattern_name .. "' not found")
     end
-
     local pattern_content = pattern:read("*a")
     pattern:close()
+
+    local params = self:split_params(line)
 
     local pattern_params = self:split_params(params[3], ",")
     for k, pattern_param in ipairs(pattern_params) do
@@ -187,7 +186,8 @@ function Handling:handle_line_pattern(line)
 end
 
 function Handling:handle_line_name(line)
-    return nil --todo
+    local name = Match_remove_substr(line, "@name%s.+", "@name%s")
+    self.name = name
 end
 
 --- Receives a text and return a table with tags, atoms and ligations
@@ -195,7 +195,9 @@ end
 ---@return Error?
 function Handling:handle_sections(text)
     for line in text:gmatch("[^\n]+") do
-        if string.find(line, "@tag %a+") then
+        if string.find(line, "@name$s[%a+]") then
+            self:handle_line_name(line)
+        elseif string.find(line, "@tag %a+") then
             local tag = self:handle_line_tag(line)
             table.insert(self.tags, tag)
         elseif string.find(line, "@p ") then

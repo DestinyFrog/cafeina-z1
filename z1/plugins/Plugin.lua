@@ -52,24 +52,30 @@ end
 ---@param ligation Ligation?
 ---@param order number
 ---@param dad_ligation Ligation?
-function Plugin:calcAtomsPosition(atom, dad_atom, ligation, order, dad_ligation)
+function Plugin:calcAtomsPosition(atom, dad_atom, ligation, order)
     if atom == nil then atom = self.atoms[1] end
     if atom.already == true then return end
 
     if ligation and dad_atom then
         if not ligation.angle then
-            local default_dad_ligation = dad_ligation and dad_ligation.angle or 0
+            local default_dad_ligation = atom.parent_ligation and atom.parent_ligation.angle or 0
+
+            local media = 0
+            local media_qtd = 0
+            for _, lig in atom.ligations do
+                
+            end
+            
             local antipodal_pai = default_dad_ligation + 180
-            local quantidade_ligacoes = (#dad_atom.ligations) + (dad_ligation and 1 or 0)
-            local angulo_fatia = 360 / quantidade_ligacoes
-            local angulo = antipodal_pai + angulo_fatia * (order + (not dad_ligation and 1 or 0))
+            local angulo_fatia = 360 / atom.ligation_num
+            local angulo = antipodal_pai + angulo_fatia * (order + (atom.parent_ligation and 1 or 0))
             ligation.angle = math.floor(angulo % 360)
         end
     end
 
     local x = 0
     local y = 0
-    if dad_atom ~= nil then
+    if dad_atom ~= nil and ligation then
         local angle_rad = math.pi * ligation.angle / 180
         x = dad_atom.x + math.cos(angle_rad) * STANDARD_LIGATION_SIZE
         y = dad_atom.y + math.sin(angle_rad) * STANDARD_LIGATION_SIZE
@@ -80,7 +86,7 @@ function Plugin:calcAtomsPosition(atom, dad_atom, ligation, order, dad_ligation)
     atom.already = true
 
     for idx, lig in ipairs(atom.ligations) do
-        self:calcAtomsPosition(lig.to, atom, lig, idx, ligation)
+        self:calcAtomsPosition(lig.to, atom, lig, idx)
     end
 end
 
