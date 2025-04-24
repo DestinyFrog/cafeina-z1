@@ -166,7 +166,7 @@ end
 ---@param line string
 ---@return Error?
 function Handling:handle_line_pattern(line)
-    local pattern_name = Match_remove_substr(line, "@p%s%a+", "@p%s")
+    local pattern_name = Match_remove_substr(line, "@p%s[%a|_]+", "@p%s")
 
     local pattern = io.open("patterns/" .. pattern_name .. ".pre.z1", "r")
     if pattern == nil then

@@ -32,10 +32,10 @@ function Z13:add(color, radius, x, y, z)
     table.insert(self.atoms, atom)
 end
 
-function Z13:build()
-    local content = ""
+function Z13:build(width, height, depth)
+    local content = string.format("%.2f %.2f %.2f", width, height, depth)
     for _, atom in ipairs(self.atoms) do
-        content = string.format("%s%s %.2f %.2f %.2f %.2f\n", content, atom.color, atom.radius, atom.x, atom.y, atom.z)
+        content = string.format("%s\n%s %.2f %.2f %.2f %.2f", content, atom.color, atom.radius, atom.x, atom.y, atom.z)
     end
     return content
 end

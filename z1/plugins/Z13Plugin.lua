@@ -106,7 +106,7 @@ function Z13Plugin:drawAtom()
 
         self.z13:add(atom.color, atom.atomic_radius,
             atom.x - self.center_x,
-            atom.y + self.height,
+            atom.y - self.center_y,
             atom.z - self.center_z
         )
         ::continue::
@@ -123,6 +123,6 @@ function Z13Plugin:build()
     local err = self:drawAtom()
     if err ~= nil then return nil, err end
 
-    local z13_content, e = self.z13:build()
+    local z13_content, e = self.z13:build(self.width, self.height, self.depth)
     return z13_content, e
 end
