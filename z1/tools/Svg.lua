@@ -1,5 +1,4 @@
-Z1_CSS = "z1.css"
-Z1_TEMP_SVG = "z1.temp.svg"
+require "z1.Config"
 
 ---@class Svg
 ---@field content string

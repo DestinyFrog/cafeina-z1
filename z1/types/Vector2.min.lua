@@ -1,0 +1,1 @@
+Vector2={}function Vector2:new(a,b,c)local d={x=a,y=b,atom=c}setmetatable(d,self)self.__index=self;return d end

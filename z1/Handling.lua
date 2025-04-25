@@ -1,6 +1,7 @@
 require "z1.tools.Error"
 require "z1.tools.Functions"
 require "z1.types.Atom"
+require "z1.Config"
 
 ---@class Handling
 ---@field tags string[]
@@ -168,7 +169,7 @@ end
 function Handling:handle_line_pattern(line)
     local pattern_name = Match_remove_substr(line, "@p%s[%a|_]+", "@p%s")
 
-    local pattern = io.open("patterns/" .. pattern_name .. ".pre.z1", "r")
+    local pattern = io.open(PATTERN_FOLDER .. pattern_name .. ".pre.z1", "r")
     if pattern == nil then
         return Error:new("Pattern '" .. pattern_name .. "' not found")
     end

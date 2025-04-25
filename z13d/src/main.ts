@@ -133,7 +133,7 @@ const controls = new OrbitControls(camera, renderer.domElement)
 renderer.setSize(WIDTH, HEIGHT)
 APP.appendChild(renderer.domElement)
 
-const light = new THREE.PointLight(0xffffff, 4000)
+const light = new THREE.PointLight(0xffffff, 6000)
 light.position.z = 100
 scene.add(light)
 
@@ -164,7 +164,7 @@ function animate() {
             .finally(() => (is_loading = false))
     }
 
-    // camera_angle += camera_rotation_speed
+    camera_angle += camera_rotation_speed
     if (camera_angle > 360 * camera_y_wave) camera_angle = camera_angle % 360
 
     let camera_x = Math.cos((camera_angle * Math.PI) / 180) * camera_radius

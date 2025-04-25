@@ -1,0 +1,1 @@
+Z13={}function Z13:new()local a={atoms={}}setmetatable(a,self)self.__index=self;return a end;function Z13:add(b,c,d,e,f)local g={color=b,radius=c,x=d,y=e,z=f}table.insert(self.atoms,g)end;function Z13:build(h,i,j)local k=string.format("%.2f %.2f %.2f",h,i,j)for l,g in ipairs(self.atoms)do k=string.format("%s\n%s %.2f %.2f %.2f %.2f",k,g.color,g.radius,g.x,g.y,g.z)end;return k end
