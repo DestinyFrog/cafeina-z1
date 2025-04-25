@@ -19,7 +19,7 @@ if error then
     os.exit(1)
 end
 
-handling:print()
+-- handling:print()
 
 ---@type string
 local plugin_name = arg[1]

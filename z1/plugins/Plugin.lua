@@ -51,7 +51,6 @@ end
 ---@param dad_atom Atom?
 ---@param ligation Ligation?
 ---@param order number
----@param dad_ligation Ligation?
 function Plugin:calcAtomsPosition(atom, dad_atom, ligation, order)
     if atom == nil then atom = self.atoms[1] end
     if atom.already == true then return end
@@ -59,16 +58,9 @@ function Plugin:calcAtomsPosition(atom, dad_atom, ligation, order)
     if ligation and dad_atom then
         if not ligation.angle then
             local default_dad_ligation = atom.parent_ligation and atom.parent_ligation.angle or 0
-
-            local media = 0
-            local media_qtd = 0
-            for _, lig in atom.ligations do
-                
-            end
-            
-            local antipodal_pai = default_dad_ligation + 180
-            local angulo_fatia = 360 / atom.ligation_num
-            local angulo = antipodal_pai + angulo_fatia * (order + (atom.parent_ligation and 1 or 0))
+            local antipodal_pai = default_dad_ligation
+            local angulo_fatia = 360 / dad_atom.ligation_num
+            local angulo = antipodal_pai + angulo_fatia * (order -1 + (atom.parent_ligation and 1 or 0))
             ligation.angle = math.floor(angulo % 360)
         end
     end

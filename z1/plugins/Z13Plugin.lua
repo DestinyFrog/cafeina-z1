@@ -60,7 +60,7 @@ end
 ---@param atom Atom?
 ---@param dad_atom Atom?
 ---@param ligation Ligation?
-function Z13Plugin:calcAtomsPosition(atom, dad_atom, ligation)
+function Z13Plugin:calcAtomsPosition(atom, dad_atom, ligation, order)
     if atom == nil then atom = self.atoms[1] end
     if atom.already == true then return end
 
@@ -73,7 +73,17 @@ function Z13Plugin:calcAtomsPosition(atom, dad_atom, ligation)
         if ligation.type == "iônica" then
             radius = radius + 60
         else
-            radius = radius - 10
+            radius = radius - 20
+        end
+
+        if ligation and dad_atom then
+            if not ligation.angle then
+                local default_dad_ligation = atom.parent_ligation and atom.parent_ligation.angle or 0
+                local antipodal_pai = default_dad_ligation
+                local angulo_fatia = 360 / dad_atom.ligation_num
+                local angulo = antipodal_pai + angulo_fatia * (order -1 + (atom.parent_ligation and 1 or 0))
+                ligation.angle = math.floor(angulo % 360)
+            end
         end
 
         if not ligation.angle3d then
@@ -94,7 +104,7 @@ function Z13Plugin:calcAtomsPosition(atom, dad_atom, ligation)
     atom.already = true
 
     for idx, lig in ipairs(atom.ligations) do
-        self:calcAtomsPosition(lig.to, atom, lig)
+        self:calcAtomsPosition(lig.to, atom, lig, idx)
     end
 end
 
