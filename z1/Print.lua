@@ -22,7 +22,6 @@ end
 ---@type string
 local plugin_name = arg[1]
 
----@type Plugin?
 local plugin = nil
 
 if plugin_name == "standard" then

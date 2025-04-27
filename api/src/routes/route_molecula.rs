@@ -1,71 +1,66 @@
-use axum::{extract::Path, http::StatusCode, response::Html, Json};
-use tokio::{fs::File, process::Command};
+use axum::{extract::{Path, Query}, http::StatusCode, Json};
+use serde::Deserialize;
+use crate::{db::get_conn, models::molecula::Molecula, tools::z1::z1::{self, Z1Output}};
 
-use crate::{db::get_conn, models::molecula::Molecula};
-
-pub async fn get_molecula_by_uid(Path(uid):Path<String>) -> (StatusCode, Result<Json<Option<Molecula>>, String>) {
+pub async fn get_all() -> (StatusCode, Result<Json<Vec<Molecula>>, String>) {
     let conn = match get_conn().await {
         Ok(d) => d,
+        Err(err) => return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string())),
+    };
+
+    let moleculas = match Molecula::get_all(conn).await {
+        Ok(d) => d,
         Err(err) => {
-            return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()) )
+            return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()));
         }
     };
 
-    let molecula = match Molecula::get_molecula_by_uid(conn, uid).await {
+    (StatusCode::OK, Ok(Json(moleculas)))
+}
+
+pub async fn get_molecula_by_uid(Path(uid): Path<String>) -> (StatusCode, Result<Json<Option<Molecula>>, String>) {
+    let conn = match get_conn().await {
+        Ok(d) => d,
+        Err(err) => return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string())),
+    };
+
+    let molecula = match Molecula::get_molecula_by_uid(&conn, uid).await {
         Ok(d) => d,
         Err(err) => {
-            println!("ERROR {}", err.to_string());
-            return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()) )
+            return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()));
         }
     };
 
     (StatusCode::OK, Ok(Json(molecula)))
 }
 
-pub async fn get_svg(Path(uid):Path<String>) -> (StatusCode, Result<Html<String>, String>) {
-    let conn = match get_conn().await {
-        Ok(d) => d,
-        Err(err) => {
-            return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()) )
-        }
-    };
-
-    let molecula = match Molecula::get_molecula_by_uid(conn, uid).await {
-        Ok(d) => d,
-        Err(err) => {
-            println!("ERROR {}", err.to_string());
-            return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()) )
-        }
-    };
-
-    //todo write example.z1
-
-    let mode = "standard";
-    let mut z1 = Command::new("lua");
-    z1.current_dir("../");
-    z1.arg("z1/Print.lua").arg(mode).arg("example.z1");
-
-    match z1.output().await {
-        Ok(v) => {
-            let output = String::from_utf8_lossy(&v.stdout);
-            (StatusCode::OK, Ok(Html(output.to_string())))
-        },
-        Err(err) => (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()) )
-    }
+#[derive(Deserialize)]
+pub struct Z1Params {
+    pub mode: Option<String>,
 }
 
-pub async fn get_z13() -> Result<String, String> {
-    let mode = "standard";
+pub async fn get_view_svg(Path(uid): Path<String>, params: Query<Z1Params>) -> (StatusCode, Result<Z1Output, String>) {
+    let conn = match get_conn().await {
+        Ok(d) => d,
+        Err(err) => return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string())),
+    };
 
-    let mut z1 = Command::new("lua");
-    z1.current_dir("../");
-    z1.arg("z1/Print.lua").arg(mode).arg("example.z1");
-
-    match z1.output().await {
-        Ok(v) => {
-            let output = String::from_utf8_lossy(&v.stdout);
-            Ok(output.to_string())
+    let molecula = match Molecula::get_molecula_by_uid(&conn, uid).await {
+        Ok(d) => match d {
+            Some(v) => v,
+            None => {
+                return (StatusCode::NOT_FOUND, Err("Molecula não encontrada".to_owned()));
+            }
         },
-        Err(err) => Err(err.to_string())
+        Err(err) => {
+            return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()));
+        }
+    };
+
+    let mode = match &params.mode { Some(v) => v, None => "standard" };
+
+    match z1::molecula_to_z1(mode, &molecula) {
+        Ok(v) => (StatusCode::OK, Ok(v)),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Err(e.to_string()))
     }
 }

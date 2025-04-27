@@ -113,4 +113,19 @@ impl Element {
             None => Ok(None),
         }
     }
+
+    pub async fn search_many(conn:&Connection, term:&str) -> Result<Vec<Element>, Box<dyn std::error::Error>> {
+        let fields: String = Self::get_fields().join(",");
+        let query = format!("SELECT {} FROM element
+            WHERE
+                `oficial_name` LIKE $1 OR
+                `symbol` LIKE $1 OR
+                `category` LIKE $1 OR
+                `discovery` LIKE $1
+                ", fields);
+
+        let general_term = format!("%{}%", term);
+        let rows: libsql::Rows = conn.query(query.as_str(), [general_term]).await?;
+        Self::select(rows).await
+    }
 }

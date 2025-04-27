@@ -1,1 +1,0 @@
-Ligation={from=nil,to=nil}function Ligation:new(a,b,c,d)local e={type=a or"covalente",eletrons=b or 1,angle=c,angle3d=d}setmetatable(e,self)self.__index=self;return e end

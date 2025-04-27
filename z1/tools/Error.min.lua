@@ -1,1 +1,0 @@
-Error={}function Error:new(a,b)local c={message=a,line=b}setmetatable(c,self)self.__index=self;return c end;function Error:print()if self.line then print(self.line..": "..self.message)else print("Error: "..self.message)end end

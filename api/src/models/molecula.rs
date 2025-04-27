@@ -1,11 +1,11 @@
-use libsql::{Connection, Row};
+use libsql::{Connection, Row, Rows};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct Molecula {
     uid: String,
     name: String,
-    z1: Option<String>,
+    pub z1: String,
     term: String
 }
 
@@ -28,12 +28,28 @@ impl Molecula {
         Ok(Molecula {
             uid,
             name,
-            z1: Some(z1),
+            z1,
             term
         })
     }
+    
+    async fn select(mut rows: Rows) -> Result<Vec<Molecula>, Box<dyn std::error::Error>> {
+        let mut moleculas: Vec<Molecula> = vec![];
+        while let Some(row) = rows.next().await? {
+            let molecula = Self::select_row(row).await?;
+            moleculas.push(molecula);
+        }
+        Ok(moleculas)
+    }
 
-    pub async fn get_molecula_by_uid(conn: Connection, uid: String) -> Result<Option<Molecula>, Box<dyn std::error::Error>> {
+    pub async fn get_all(conn: Connection) -> Result<Vec<Molecula>, Box<dyn std::error::Error>> {
+        let fields = Self::get_fields().join(",");
+        let query = format!("SELECT {} FROM molecula", fields);
+        let rows: libsql::Rows = conn.query(query.as_str(), ()).await?;
+        Ok(Self::select(rows).await?)
+    }
+
+    pub async fn get_molecula_by_uid(conn:&Connection, uid: String) -> Result<Option<Molecula>, Box<dyn std::error::Error>> {
         let fields = Self::get_fields().join(",");
         let query = format!("SELECT {} FROM molecula WHERE uid = $1", fields);
         let mut rows: libsql::Rows = conn.query(query.as_str(), [uid]).await?;
@@ -50,5 +66,14 @@ impl Molecula {
             },
             None => Ok(None),
         }
+    }
+
+    pub async fn search_many(conn:&Connection, term:&str) -> Result<Vec<Molecula>, Box<dyn std::error::Error>> {
+        let fields: String = Self::get_fields().join(",");
+        let query = format!("SELECT {} FROM molecula WHERE `name` LIKE $1", fields);
+        
+        let general_term = format!("%{}%", term);
+        let rows: libsql::Rows = conn.query(query.as_str(), [general_term]).await?;
+        Self::select(rows).await
     }
 }
