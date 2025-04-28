@@ -1,8 +1,8 @@
 import './windowElement.css'
 
-import Window from '../widget/window'
 import Element from '../models/element'
 import { capitalize } from '../util'
+import Window from '../widget/window'
 
 class WindowElement extends Window {
 	public element: Element

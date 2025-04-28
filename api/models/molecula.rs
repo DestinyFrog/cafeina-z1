@@ -76,4 +76,24 @@ impl Molecula {
         let rows: libsql::Rows = conn.query(query.as_str(), [general_term]).await?;
         Self::select(rows).await
     }
+
+    pub async fn search_by_term(conn:&Connection, term:&str) -> Result<Option<Molecula>, Box<dyn std::error::Error>> {
+        let fields: String = Self::get_fields().join(",");
+        let query = format!("SELECT {} FROM molecula WHERE `term` = $1", fields);
+
+        let mut rows: libsql::Rows = conn.query(query.as_str(), [term]).await?;
+        
+        let row: Option<Row> = match rows.next().await {
+            Ok(v) => v,
+            Err(e) => return Err(Box::new(e)),
+        };
+
+        match row {
+            Some(v) => {
+                let molecula = Self::select_row(v).await?;
+                Ok(Some(molecula))
+            },
+            None => Ok(None),
+        }
+    }
 }

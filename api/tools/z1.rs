@@ -26,7 +26,6 @@ pub mod z1 {
 
     fn run_command(mode:&str, file_name:&str) -> Result<String, Box<dyn std::error::Error>> {
         let output = Command::new("lua")
-            .current_dir("../")
             .arg("z1/Print.lua")
             .arg(mode)
             .arg(file_name)

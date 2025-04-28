@@ -12,9 +12,7 @@ class WindowBrowser extends Window {
     private input_search: HTMLInputElement
     private ul_recomendation: HTMLUListElement
 
-    private icons = {
-        element: "/search_element.svg",
-    }
+    private queue: Function[] = []
 
     constructor() {
         super("search", "Navegador")
@@ -60,47 +58,71 @@ class WindowBrowser extends Window {
         })
     }
 
+    private updateQueue(fn?: Function) {
+        if (fn) this.queue.push(fn)
+
+        if (this.queue.length) {
+            if (this.queue.length > 2)
+                this.queue = [this.queue[0], this.queue[this.queue.length - 1]]
+
+            const fn = this.queue[0]
+            this.queue.shift()
+            fn()
+        }
+    }
+
     public async Search() {
         const term = this.input_search.value
+        if (term == "") {
+            this.clear()
+            return
+        }
 
-        if (term == "") return
+        const queueSearchFn = async () => {
+            const data = await SearchObject.search(term)
 
-        SearchObject.search(term)
-		.then(data => {
-			this.ul_recomendation.innerHTML = ""
+            this.clear()
 
-			data.elements.forEach(element => {
-				const li = this.treatElement(element)!
-				if (li) this.ul_recomendation.appendChild(li)
-			})
+            data.elements.forEach((element) => {
+                this.treatElement(element)
+            })
 
-			data.moleculas.forEach(molecula => {
-				const li = this.treatMolecula(molecula)!
-				if (li) this.ul_recomendation.appendChild(li)
-			})
-		})
+            data.moleculas.forEach((molecula) => {
+                this.treatMolecula(molecula)
+            })
+
+            this.updateQueue()
+        }
+
+        setTimeout(() => {
+            this.updateQueue(queueSearchFn)
+        }, 1000)
     }
 
-    private treatElement(element: ElementPayload): HTMLElement {
+    private clear() {
+        this.ul_recomendation.innerHTML = ""
+    }
+
+    private treatElement(element: ElementPayload) {
         const li = document.createElement("li")
         li.textContent = element.oficial_name
-		li.addEventListener('click', _ => {
-			const ready_element = new Element(element)
-			const w = new WindowElement(ready_element)
-			w.Start()
-		})
-		return li
+        li.addEventListener("click", (_) => {
+            const ready_element = new Element(element)
+            const w = new WindowElement(ready_element)
+            w.Start()
+        })
+        if (li) this.ul_recomendation.appendChild(li)
     }
 
-	private treatMolecula(molecula: MoleculaPayload): HTMLElement {
+    private treatMolecula(molecula: MoleculaPayload) {
         const li = document.createElement("li")
         li.textContent = molecula.name
-		li.addEventListener('click', _ => {
-			const ready_molecula = new Molecula(molecula)
-			const w = new WindowMolecula(ready_molecula)
-			w.Start()
-		})
-		return li
+        li.addEventListener("click", (_) => {
+            const ready_molecula = new Molecula(molecula)
+            const w = new WindowMolecula(ready_molecula)
+            w.Start()
+        })
+        if (li) this.ul_recomendation.appendChild(li)
     }
 }
 

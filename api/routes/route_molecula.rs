@@ -64,3 +64,19 @@ pub async fn get_view_svg(Path(uid): Path<String>, params: Query<Z1Params>) -> (
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Err(e.to_string()))
     }
 }
+
+pub async fn get_molecula_by_term(Path(term): Path<String>) -> (StatusCode, Result<Json<Option<Molecula>>, String>) {
+    let conn = match get_conn().await {
+        Ok(d) => d,
+        Err(err) => return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string())),
+    };
+
+    let molecula = match Molecula::search_by_term(&conn, &term).await {
+        Ok(d) => d,
+        Err(err) => {
+            return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()));
+        }
+    };
+
+    (StatusCode::OK, Ok(Json(molecula)))
+}

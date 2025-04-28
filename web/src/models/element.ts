@@ -15,7 +15,7 @@ export const Category = {
     "desconhecido": "#333333",
 }
 
-interface ElementPayload {
+export interface ElementPayload {
     atomic_number: number
     oficial_name: string
     symbol: string
