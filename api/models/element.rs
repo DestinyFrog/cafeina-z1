@@ -13,6 +13,7 @@ pub struct Element {
     eletronegativity: Option<f64>,
     period: i32,
     family: i32,
+    fase: String,
     xpos: i32,
     ypos: i32,
     layers: Vec<i64>,
@@ -39,6 +40,7 @@ impl Element {
             String::from("electronic_configuration"),
             String::from("oxidation_state"),
             String::from("discovery_year"),
+            String::from("fase")
         ]
     }
 
@@ -58,6 +60,7 @@ impl Element {
         let electronic_configuration: String = row.get(12)?;
         let oxidation_state = from_str(row.get_str(13)?)?;
         let discovery_year = row.get_value(14)?.as_integer().copied();
+        let fase:String = row.get(15)?;
 
         Ok(Element {
             atomic_number,
@@ -75,6 +78,7 @@ impl Element {
             layers,
             oxidation_state,
             discovery_year,
+            fase
         })
     }
 
