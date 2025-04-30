@@ -1,8 +1,10 @@
-<script>
+<script lang="ts">
 let {
+    children,
     title,
     x: start_x = 10,
-    y: start_y = 10
+    y: start_y = 10,
+    background_color = "white"
 } = $props()
 
 let is_dragging = false
@@ -12,14 +14,14 @@ let y = $state(start_y)
 let offset_x = $state(0)
 let offset_y = $state(0)
 
-function mouseDown(event) {
+function mouseDown(event:MouseEvent) {
     offset_x = x - event.clientX
     offset_y = y - event.clientY
 
     is_dragging = true
 }
 
-function windowMouseMove(event) {
+function windowMouseMove(event:MouseEvent) {
     if (!is_dragging) return
 
     if (is_dragging) {
@@ -28,25 +30,31 @@ function windowMouseMove(event) {
     }
 }
 
-function windowMouseUp(event) {
+function windowMouseUp(_event:MouseEvent) {
     is_dragging = false
+}
+
+let thisWindow: Element
+function close() {
+    thisWindow.remove()
 }
 </script>
 
 <svelte:window
-    on:mousemove="{windowMouseMove}"
-    on:mouseup="{windowMouseUp}"
+    on:mousemove="{(ev) => windowMouseMove(ev)}"
+    on:mouseup="{(ev) => windowMouseUp(ev)}"
     ></svelte:window>
 
-<div class="window" style="top: {y}px; left: {x}px;">
+<div bind:this={thisWindow} class="window" style="top: {y}px; left: {x}px;">
+
     <div aria-hidden="true" class="header"
         onmousedown={(ev) => mouseDown(ev)}>
         <p class="title">{ title }</p>
-        <div class="closer"></div>
+        <button class="closer" onclick={close} aria-label="false"></button>
     </div>
 
-    <div class="content">
-        <slot></slot>
+    <div class="content" style="background-color: {background_color};">
+        {@render children()}
     </div>
 </div>
 
@@ -57,7 +65,7 @@ function windowMouseUp(event) {
 	height: min-content;
     border-radius: 4px;
     border: 2px solid black;
-	background-color: beige;
+    background-color: beige;
 }
 
 .window .header {
@@ -87,7 +95,6 @@ function windowMouseUp(event) {
     border: 2px solid black;
     margin: 4px;
     padding: 4px;
-    background-color: white;
     border-radius: 4px;
 }
 

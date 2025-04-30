@@ -1,10 +1,18 @@
 <script lang="ts">
-  import WindowPeriodicTable from "./windows/WindowPeriodicTable.svelte";
+import { mount } from "svelte";
+import WindowPeriodicTable from "./windows/WindowPeriodicTable.svelte";
+
+let windows = []
+
+const newWin = mount( WindowPeriodicTable, {
+  target: document.getElementById('app')!,
+  props: {}
+} )
+
+windows.push(newWin)
 </script>
 
-<main>
-    <WindowPeriodicTable></WindowPeriodicTable>
-</main>
+<main></main>
 
 <style>
 main {

@@ -12,7 +12,13 @@ export const Category = {
     "gás nobre": "#7525FA",
     "lantanídeo": "#054f77",
     "actinídeo": "#4169e1",
-    "desconhecido": "#333333",
+    "desconhecido": "#333333"
+}
+
+export const Fase = {
+    "S": {name: "sólido"},
+    "L": {name: "líquido"},
+    "G": {name: "gasoso"}
 }
 
 export interface ElementPayload {
@@ -25,6 +31,7 @@ export interface ElementPayload {
     eletronegativity?: number
     period: number
     family: number
+    fase: keyof typeof Fase
     xpos: number
     ypos: number
     layers: number[]
@@ -43,6 +50,7 @@ class Element implements ElementPayload {
     public eletronegativity: number | undefined
     public period: number
     public family: number
+    public fase: keyof typeof Fase
     public xpos: number
     public ypos: number
     public layers: number[]
@@ -60,6 +68,7 @@ class Element implements ElementPayload {
         this.eletronegativity = payload.eletronegativity
         this.period = payload.period
         this.family = payload.family
+        this.fase = payload.fase
         this.xpos = payload.xpos
         this.ypos = payload.ypos
         this.layers = payload.layers
@@ -68,7 +77,7 @@ class Element implements ElementPayload {
         this.discovery_year = payload.discovery_year
     }
 
-    get color(): string {
+    get category_color(): string {
         return Category[this.category]
     }
 
