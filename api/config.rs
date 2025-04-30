@@ -7,14 +7,16 @@ pub struct ApiConfig {
 }
 
 pub struct DbConfig {
+    pub local_db: String,
     pub token: String,
     pub url: String
 }
 
 pub fn load_db_config() -> Result<DbConfig, env::VarError> {
+    let local_db: String = env::var("LOCAL_DB")?;
     let token: String = env::var("TURSO_TOKEN")?;
     let url: String = env::var("TURSO_URL")?;
-    Ok(DbConfig { token, url })
+    Ok(DbConfig { token, url, local_db })
 }
 
 pub fn load_api_config() -> Result<ApiConfig, Box<dyn std::error::Error>> {

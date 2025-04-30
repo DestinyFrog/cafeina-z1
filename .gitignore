@@ -3,7 +3,6 @@ node_modules
 target
 target/*
 .env
-*.sql
 run.sh
 
 # Logs
