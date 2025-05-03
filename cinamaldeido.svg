@@ -1,0 +1,98 @@
+<svg width="222" height="160" xmlns="http://www.w3.org/2000/svg" style="background-color:white;">
+    <style>
+        .svg-element {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            fill: black;
+            font-weight: bold;
+            dominant-baseline: middle;
+            text-anchor: middle;
+        }
+
+        .svg-element-charge-border {
+            stroke: black;
+            stroke-width: 0.3px;
+            fill: white;
+            r: 2.5px;
+        }
+
+        .svg-element-charge {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 3px;
+            fill: black;
+            dominant-baseline: central;
+            text-anchor: middle;
+        }
+
+        .svg-ligation {
+            stroke-width: 1px;
+            stroke: black;
+        }
+
+        .svg-element-H {
+            fill: #727272;
+        }
+
+        .svg-element-S {
+            fill: #f7cd29;
+        }
+
+        .svg-element-Na {
+            fill: #f7d653;
+        }
+
+        .svg-element-Cl {
+            fill: #21d122;
+        }
+
+        .svg-element-F {
+            fill: #aed482;
+        }
+
+        .svg-element-N {
+            fill: #7878fa;
+        }
+
+        .svg-element-O {
+            fill: #eb3738;
+        }
+
+        .svg-element-C {
+            fill: #000000;
+        }
+    </style><text class="svg-element svg-element-C" x="71.9615" y="50">C</text><text class="svg-element svg-element-C"
+        x="97.9423" y="65">C</text><text class="svg-element svg-element-C" x="97.9423" y="95">C</text><text
+        class="svg-element svg-element-C" x="71.9615" y="110">C</text><text class="svg-element svg-element-C"
+        x="45.9808" y="95">C</text><text class="svg-element svg-element-C" x="45.9808" y="65">C</text><text
+        class="svg-element svg-element-H" x="71.9615" y="20">H</text><text class="svg-element svg-element-H" x="123.923"
+        y="110">H</text><text class="svg-element svg-element-H" x="71.9615" y="140">H</text><text
+        class="svg-element svg-element-H" x="20" y="110">H</text><text class="svg-element svg-element-H" x="20"
+        y="50">H</text><text class="svg-element svg-element-C" x="123.923" y="50">C</text><text
+        class="svg-element svg-element-H" x="123.923" y="20">H</text><text class="svg-element svg-element-C" x="149.904"
+        y="65">C</text><text class="svg-element svg-element-H" x="149.904" y="95">H</text><text
+        class="svg-element svg-element-C" x="175.885" y="50">C</text><text class="svg-element svg-element-H" x="201.865"
+        y="65">H</text><text class="svg-element svg-element-O" x="175.885" y="20">O</text>
+    <line class="svg-ligation" x1="90.1481" y1="99.5" x2="79.7558" y2="105.5"></line>
+    <line class="svg-ligation" x1="63.5043" y1="106.922" x2="52.8752" y2="100.785"></line>
+    <line class="svg-ligation" x1="65.0671" y1="104.215" x2="54.438" y2="98.0782"></line>
+    <line class="svg-ligation" x1="79.7558" y1="54.5" x2="90.1481" y2="60.5"></line>
+    <line class="svg-ligation" x1="99.5051" y1="73.8633" x2="99.5051" y2="86.1367"></line>
+    <line class="svg-ligation" x1="96.3795" y1="73.8633" x2="96.3795" y2="86.1367"></line>
+    <line class="svg-ligation" x1="71.9615" y1="119" x2="71.9615" y2="131"></line>
+    <line class="svg-ligation" x1="174.322" y1="41.1367" x2="174.322" y2="28.8633"></line>
+    <line class="svg-ligation" x1="177.447" y1="41.1367" x2="177.447" y2="28.8633"></line>
+    <line class="svg-ligation" x1="149.904" y1="74" x2="149.904" y2="86"></line>
+    <line class="svg-ligation" x1="132.38" y1="53.0782" x2="143.009" y2="59.2149"></line>
+    <line class="svg-ligation" x1="130.817" y1="55.7851" x2="141.447" y2="61.9218"></line>
+    <line class="svg-ligation" x1="183.679" y1="54.5" x2="194.071" y2="60.5"></line>
+    <line class="svg-ligation" x1="157.698" y1="60.5" x2="168.09" y2="54.5"></line>
+    <line class="svg-ligation" x1="123.923" y1="41" x2="123.923" y2="29"></line>
+    <line class="svg-ligation" x1="38.1865" y1="60.5" x2="27.7942" y2="54.5"></line>
+    <line class="svg-ligation" x1="105.737" y1="99.5" x2="116.129" y2="105.5"></line>
+    <line class="svg-ligation" x1="38.1865" y1="99.5" x2="27.7942" y2="105.5"></line>
+    <line class="svg-ligation" x1="71.9615" y1="41" x2="71.9615" y2="29"></line>
+    <line class="svg-ligation" x1="105.737" y1="60.5" x2="116.129" y2="54.5"></line>
+    <line class="svg-ligation" x1="45.9808" y1="86" x2="45.9808" y2="74"></line>
+    <line class="svg-ligation" x1="65.0671" y1="55.7851" x2="54.438" y2="61.9218"></line>
+    <line class="svg-ligation" x1="63.5043" y1="53.0782" x2="52.8752" y2="59.2149"></line>
+</svg>
