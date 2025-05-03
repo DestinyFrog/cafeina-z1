@@ -1,8 +1,9 @@
-import "./style.css"
-import WindowBrowser from "./windows/windowBrowser"
+import { mount } from 'svelte'
+import './app.css'
+import App from './App.svelte'
 
-(async () => {
-    const w = new WindowBrowser()
-    w.Start()
+const app = mount(App, {
+  target: document.getElementById('app')!,
 })
-.call(this)
+
+export default app

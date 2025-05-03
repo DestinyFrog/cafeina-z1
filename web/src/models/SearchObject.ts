@@ -1,6 +1,6 @@
 import { URL_PREFIX } from "../config"
-import { ElementPayload } from "./element"
-import { MoleculaPayload } from "./molecula"
+import type { ElementPayload } from "./Element"
+import type { MoleculaPayload } from "./Molecula"
 
 export interface SearchObjectPayload {
     elements: ElementPayload[]

@@ -1,4 +1,5 @@
 import { URL_PREFIX } from "../config"
+import type { Vec2 } from "../lib/util"
 
 export const Category = {
     "hidrogênio": "#8c0250",
@@ -12,8 +13,16 @@ export const Category = {
     "gás nobre": "#7525FA",
     "lantanídeo": "#054f77",
     "actinídeo": "#4169e1",
-    "desconhecido": "#333333",
+    "desconhecido": "#333333"
 }
+
+export const Fase = {
+    "S": {name: "sólido"},
+    "L": {name: "líquido"},
+    "G": {name: "gasoso"}
+}
+
+export type PeriodicTableFormats = 'normal' | 'extended'
 
 export interface ElementPayload {
     atomic_number: number
@@ -25,30 +34,34 @@ export interface ElementPayload {
     eletronegativity?: number
     period: number
     family: number
+    fase: keyof typeof Fase
     xpos: number
     ypos: number
     layers: number[]
     electronic_configuration: string
     oxidation_state: number[]
     discovery_year?: number
+    discovery: string[]
 }
 
 class Element implements ElementPayload {
-    public atomic_number: number
-    public oficial_name: string
-    public symbol: string
-    public atomic_radius: number | undefined
-    public category: keyof typeof Category
-    public atomic_mass?: number
-    public eletronegativity: number | undefined
-    public period: number
-    public family: number
-    public xpos: number
-    public ypos: number
-    public layers: number[]
-    public electronic_configuration: string
-    public oxidation_state: number[]
-    public discovery_year: number | undefined
+    atomic_number: number
+    oficial_name: string
+    symbol: string
+    atomic_radius: number | undefined
+    category: keyof typeof Category
+    atomic_mass?: number
+    eletronegativity: number | undefined
+    period: number
+    family: number
+    fase: keyof typeof Fase
+    xpos: number
+    ypos: number
+    layers: number[]
+    electronic_configuration: string
+    oxidation_state: number[]
+    discovery_year: number | undefined
+    discovery: string[]
 
     constructor(payload: ElementPayload) {
         this.atomic_number = payload.atomic_number
@@ -60,16 +73,53 @@ class Element implements ElementPayload {
         this.eletronegativity = payload.eletronegativity
         this.period = payload.period
         this.family = payload.family
+        this.fase = payload.fase
         this.xpos = payload.xpos
         this.ypos = payload.ypos
         this.layers = payload.layers
         this.electronic_configuration = payload.electronic_configuration
         this.oxidation_state = payload.oxidation_state
         this.discovery_year = payload.discovery_year
+        this.discovery = payload.discovery
     }
 
-    get color(): string {
+    get category_color(): string {
         return Category[this.category]
+    }
+
+    get eletrons(): number {
+        return this.atomic_number
+    }
+
+    get protons(): number {
+        return this.atomic_number
+    }
+
+    get neutrons(): number {
+        if ( !this.atomic_mass ) return this.atomic_number
+        return Math.floor(this.atomic_mass) - this.atomic_number 
+    }
+
+    get fase_name() {
+        return Fase[this.fase].name
+    }
+
+    get_position(mode: PeriodicTableFormats = "normal"): Vec2 {
+        let x = this.xpos
+        let y = this.ypos
+
+        switch(mode) {
+            case "extended":
+                if (this.category == "actinídeo" || this.category == "lantanídeo") {
+                    x--
+                    y -= 3
+                }
+                else if (this.xpos > 2)
+                    x += 14
+                break
+        }
+
+        return { x, y }
     }
 
     static async get_many() {

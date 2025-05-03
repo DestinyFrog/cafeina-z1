@@ -1,6 +1,5 @@
 <script lang="ts">
 let {
-    children,
     title,
     x: start_x = 10,
     y: start_y = 10,
@@ -54,7 +53,11 @@ function close() {
     </div>
 
     <div class="content" style="background-color: {background_color};">
-        {@render children()}
+        <slot></slot>
+    </div>
+
+    <div class="footer">
+        <slot name="footer"></slot>
     </div>
 </div>
 
@@ -93,9 +96,9 @@ function close() {
 	flex-direction: column;
 	align-items: center;
     border: 2px solid black;
-    margin: 4px;
     padding: 4px;
     border-radius: 4px;
+    margin: 4px 4px 0px 4px;
 }
 
 .closer {
@@ -105,5 +108,10 @@ function close() {
     margin-left: 4px;
     border: 2px solid white;
     background-color: red;
+    cursor: pointer;
+}
+
+.footer {
+    padding: 4px;
 }
 </style>
