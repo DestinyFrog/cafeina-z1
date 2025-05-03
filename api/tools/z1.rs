@@ -6,8 +6,6 @@ pub mod z1 {
     use std::{io::{ErrorKind, Write}, process::{Command, Stdio}};
     use tempfile::NamedTempFile;
 
-    use crate::models::molecula::Molecula;
-
     //todo specify Z1Error
 
     pub enum Z1Output {
@@ -44,9 +42,9 @@ pub mod z1 {
         }
     }
 
-    pub fn molecula_to_z1(mode:&str, molecula:&Molecula) -> Result<Z1Output, Box<dyn std::error::Error>> {
+    pub fn molecula_to_z1(mode:&str, z1:String) -> Result<Z1Output, Box<dyn std::error::Error>> {
         let mut file = NamedTempFile::new()?;
-        writeln!(file, "{}", molecula.z1)?;
+        writeln!(file, "{}", z1)?;
         let file_name = match file.path().to_str() {
             Some(v) => Ok(v.to_owned()),
             None => Err(Box::new(std::io::Error::new(

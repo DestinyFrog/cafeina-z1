@@ -1,10 +1,12 @@
 use axum::extract::Path;
 use axum::{ http::StatusCode, Json };
 
+use crate::db::table::Res;
 use crate::models::element::Element;
-use crate::db::get_conn;
+use crate::db::conn::get_conn;
 
-pub async fn get_elements() -> (StatusCode, Result<Json<Vec<Element>>, String>) {
+pub async fn get_elements()
+    -> (StatusCode, Result<Json<Vec<Res>>, String>) {
     let conn = match get_conn().await {
         Ok(d) => d,
         Err(err) => {
@@ -12,7 +14,7 @@ pub async fn get_elements() -> (StatusCode, Result<Json<Vec<Element>>, String>) 
         }
     };
 
-    let elements = match Element::get_all(conn).await {
+    let elements = match Element::get_all(&conn).await {
         Ok(d) => d,
         Err(err) => {
             println!("ERROR {}", err.to_string());
@@ -23,7 +25,8 @@ pub async fn get_elements() -> (StatusCode, Result<Json<Vec<Element>>, String>) 
     (StatusCode::OK, Ok(Json(elements)))
 }
 
-pub async fn get_element_by_atomic_number(Path(atomic_number):Path<i32>) -> (StatusCode, Result<Json<Option<Element>>, String>) {
+pub async fn get_element_by_atomic_number(Path(atomic_number):Path<i32>)
+    -> (StatusCode, Result<Json<Option<Res>>, String>) {
     let conn = match get_conn().await {
         Ok(d) => d,
         Err(err) => {
@@ -31,7 +34,7 @@ pub async fn get_element_by_atomic_number(Path(atomic_number):Path<i32>) -> (Sta
         }
     };
 
-    let element = match Element::get_one_by_atomic_number(conn, atomic_number).await {
+    let element = match Element::get_one_by_atomic_number(&conn, atomic_number).await {
         Ok(d) => d,
         Err(err) => {
             println!("ERROR {}", err.to_string());
@@ -39,5 +42,8 @@ pub async fn get_element_by_atomic_number(Path(atomic_number):Path<i32>) -> (Sta
         }
     };
 
-    (StatusCode::OK, Ok(Json(element)))
+    match element {
+        Some(t) => (StatusCode::OK, Ok(Json(Some(t)))),
+        None => (StatusCode::NOT_FOUND, Ok(Json(None)))
+    }
 }

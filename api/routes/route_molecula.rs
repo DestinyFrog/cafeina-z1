@@ -1,14 +1,15 @@
 use axum::{extract::{Path, Query}, http::StatusCode, Json};
 use serde::Deserialize;
-use crate::{db::get_conn, models::molecula::Molecula, tools::z1::z1::{self, Z1Output}};
+use crate::{db::{conn::get_conn, table::Res}, models::molecula::Molecula, tools::z1::z1::{self, Z1Output}};
 
-pub async fn get_all() -> (StatusCode, Result<Json<Vec<Molecula>>, String>) {
+pub async fn get_all()
+    -> (StatusCode, Result<Json<Vec<Res>>, String>) {
     let conn = match get_conn().await {
         Ok(d) => d,
         Err(err) => return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string())),
     };
 
-    let moleculas = match Molecula::get_all(conn).await {
+    let moleculas = match Molecula::get_all(&conn).await {
         Ok(d) => d,
         Err(err) => {
             return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()));
@@ -18,13 +19,14 @@ pub async fn get_all() -> (StatusCode, Result<Json<Vec<Molecula>>, String>) {
     (StatusCode::OK, Ok(Json(moleculas)))
 }
 
-pub async fn get_molecula_by_uid(Path(uid): Path<String>) -> (StatusCode, Result<Json<Option<Molecula>>, String>) {
+pub async fn get_molecula_by_uid(Path(uid): Path<String>)
+    -> (StatusCode, Result<Json<Option<Res>>, String>) {
     let conn = match get_conn().await {
         Ok(d) => d,
         Err(err) => return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string())),
     };
 
-    let molecula = match Molecula::get_molecula_by_uid(&conn, uid).await {
+    let molecula = match Molecula::get_one_by_uid(&conn, &uid).await {
         Ok(d) => d,
         Err(err) => {
             return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()));
@@ -45,9 +47,9 @@ pub async fn get_view_svg(Path(uid): Path<String>, params: Query<Z1Params>) -> (
         Err(err) => return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string())),
     };
 
-    let molecula = match Molecula::get_molecula_by_uid(&conn, uid).await {
+    let z1 = match Molecula::get_z1_by_uid(&conn, &uid).await {
         Ok(d) => match d {
-            Some(v) => v,
+            Some(v) => v.replace("\\n", "\n").replace("\"", ""),
             None => {
                 return (StatusCode::NOT_FOUND, Err("Molecula não encontrada".to_owned()));
             }
@@ -59,19 +61,20 @@ pub async fn get_view_svg(Path(uid): Path<String>, params: Query<Z1Params>) -> (
 
     let mode = match &params.mode { Some(v) => v, None => "standard" };
 
-    match z1::molecula_to_z1(mode, &molecula) {
+    match z1::molecula_to_z1(mode, z1) {
         Ok(v) => (StatusCode::OK, Ok(v)),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Err(e.to_string()))
     }
 }
 
-pub async fn get_molecula_by_term(Path(term): Path<String>) -> (StatusCode, Result<Json<Option<Molecula>>, String>) {
+pub async fn get_molecula_by_term(Path(term): Path<String>)
+    -> (StatusCode, Result<Json<Option<Res>>, String>) {
     let conn = match get_conn().await {
         Ok(d) => d,
         Err(err) => return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string())),
     };
 
-    let molecula = match Molecula::search_by_term(&conn, &term).await {
+    let molecula = match Molecula::get_one_by_term(&conn, &term).await {
         Ok(d) => d,
         Err(err) => {
             return (StatusCode::INTERNAL_SERVER_ERROR, Err(err.to_string()));

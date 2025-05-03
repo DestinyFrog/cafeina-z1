@@ -1,99 +1,67 @@
-use libsql::{Connection, Row, Rows};
-use serde::{Deserialize, Serialize};
+use libsql::Connection;
 
-#[derive(Serialize, Deserialize)]
-pub struct Molecula {
-    uid: String,
-    name: String,
-    pub z1: String,
-    term: String
+use crate::db::table::{FieldType, Res, Table};
+
+pub struct Molecula {}
+
+impl Table for Molecula {
+    fn get_fields() -> Vec<(&'static str, crate::db::table::FieldType)> {
+        vec![
+            ("uid",     FieldType::String),
+            ("name",    FieldType::String),
+        ]
+    }
 }
 
 impl Molecula {
-    fn get_fields() -> Vec<String> {
-        vec![
-            String::from("uid"),
-            String::from("name"),
-            String::from("z1"),
-            String::from("term")
-        ]
+    pub async fn get_all(conn: &Connection)
+        -> Result<Vec<Res>, Box<dyn std::error::Error>> {
+
+        let query = format!("SELECT {} FROM molecula",
+            Self::get_fields_str());
+
+        let mut rows = conn.query(query.as_str(), ()).await?;
+        Self::select_all(&mut rows).await
     }
 
-    async fn select_row(row: Row) -> Result<Molecula, Box<dyn std::error::Error>> {
-        let uid: String = row.get(0)?;
-        let name: String = row.get(1)?;
-        let z1: String = row.get(2)?;
-        let term: String = row.get(3)?;
+    pub async fn get_one_by_uid(conn: &Connection, uid: &str)
+        -> Result<Option<Res>, Box<dyn std::error::Error>> {
 
-        Ok(Molecula {
-            uid,
-            name,
-            z1,
-            term
+        let query = format!("SELECT {} FROM molecula WHERE uid = $1",
+            Self::get_fields_str());
+
+        let mut rows = conn.query(query.as_str(), [uid]).await?;
+        Self::select_one(&mut rows).await
+    }
+
+    pub async fn get_z1_by_uid(conn: &Connection, uid: &str)
+        -> Result<Option<String>, Box<dyn std::error::Error>> {
+
+        let mut rows = conn.query("SELECT `z1` FROM molecula WHERE uid = $1", [uid]).await?;
+        Ok(match Self::get_field(&mut rows, FieldType::String).await? {
+            Some(t) => Some(serde_json::Value::to_string(&t)),
+            None => None
         })
     }
-    
-    async fn select(mut rows: Rows) -> Result<Vec<Molecula>, Box<dyn std::error::Error>> {
-        let mut moleculas: Vec<Molecula> = vec![];
-        while let Some(row) = rows.next().await? {
-            let molecula = Self::select_row(row).await?;
-            moleculas.push(molecula);
-        }
-        Ok(moleculas)
-    }
 
-    pub async fn get_all(conn: Connection) -> Result<Vec<Molecula>, Box<dyn std::error::Error>> {
-        let fields = Self::get_fields().join(",");
-        let query = format!("SELECT {} FROM molecula", fields);
-        let rows: libsql::Rows = conn.query(query.as_str(), ()).await?;
-        Ok(Self::select(rows).await?)
-    }
+    pub async fn search_for(conn: &Connection, term: &str)
+        -> Result<Vec<Res>, Box<dyn std::error::Error>> {
 
-    pub async fn get_molecula_by_uid(conn:&Connection, uid: String) -> Result<Option<Molecula>, Box<dyn std::error::Error>> {
-        let fields = Self::get_fields().join(",");
-        let query = format!("SELECT {} FROM molecula WHERE uid = $1", fields);
-        let mut rows: libsql::Rows = conn.query(query.as_str(), [uid]).await?;
-
-        let row: Option<Row> = match rows.next().await {
-            Ok(v) => v,
-            Err(e) => return Err(Box::new(e)),
-        };
-
-        match row {
-            Some(v) => {
-                let molecula = Self::select_row(v).await?;
-                Ok(Some(molecula))
-            },
-            None => Ok(None),
-        }
-    }
-
-    pub async fn search_many(conn:&Connection, term:&str) -> Result<Vec<Molecula>, Box<dyn std::error::Error>> {
-        let fields: String = Self::get_fields().join(",");
-        let query = format!("SELECT {} FROM molecula WHERE `name` LIKE $1", fields);
+        let query = format!("SELECT {} FROM molecula WHERE `name` LIKE $1",
+            Self::get_fields_str());
         
         let general_term = format!("%{}%", term);
-        let rows: libsql::Rows = conn.query(query.as_str(), [general_term]).await?;
-        Self::select(rows).await
+        let mut rows = conn.query(query.as_str(), [general_term]).await?;
+        Self::select_all(&mut rows).await
     }
 
-    pub async fn search_by_term(conn:&Connection, term:&str) -> Result<Option<Molecula>, Box<dyn std::error::Error>> {
-        let fields: String = Self::get_fields().join(",");
-        let query = format!("SELECT {} FROM molecula WHERE `term` = $1", fields);
+    pub async fn get_one_by_term(conn: &Connection, term: &str)
+        -> Result<Option<Res>, Box<dyn std::error::Error>> {
 
-        let mut rows: libsql::Rows = conn.query(query.as_str(), [term]).await?;
+        let query = format!("SELECT {} FROM molecula WHERE term = $1",
+            Self::get_fields_str());
         
-        let row: Option<Row> = match rows.next().await {
-            Ok(v) => v,
-            Err(e) => return Err(Box::new(e)),
-        };
-
-        match row {
-            Some(v) => {
-                let molecula = Self::select_row(v).await?;
-                Ok(Some(molecula))
-            },
-            None => Ok(None),
-        }
+        let mut rows = conn.query(query.as_str(), [term]).await?;
+        Self::select_one(&mut rows).await
     }
 }
