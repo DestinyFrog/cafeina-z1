@@ -7,16 +7,17 @@ require "z1.Config"
 ---@field tags string[]
 ---@field atoms Atom[]
 ---@field ligations Ligation[]
-Handling = {
-    tags = {},
-    atoms = {},
-    ligations = {}
-}
+Handling = {}
 
 ---constructs Handling object
 ---@return Handling
 function Handling:new()
-    local obj = {}
+    local obj = {
+        names = {},
+        tags = {},
+        atoms = {},
+        ligations = {}
+    }
     setmetatable(obj, self)
     self.__index = self
     return obj
@@ -52,7 +53,7 @@ end
 ---@param line string
 ---@return (string|nil)
 function Handling:handle_line_tag(line)
-    local text = Match_substr(line, "@tag%s%a+"):gsub("@tag%s","")
+    local text = Match_remove_substr(line, "@tag%s.+", "@tag%s")
     if not text then return end
     table.insert(self.tags, text)
 end
@@ -188,7 +189,7 @@ end
 
 function Handling:handle_line_name(line)
     local name = Match_remove_substr(line, "@name%s.+", "@name%s")
-    self.name = name
+    table.insert(self.names, name)
 end
 
 --- Receives a text and return a table with tags, atoms and ligations
@@ -196,9 +197,9 @@ end
 ---@return Error?
 function Handling:handle_sections(text)
     for line in text:gmatch("[^\n]+") do
-        if string.find(line, "@name$s[%a+]") then
+        if string.find(line, "@name") then
             self:handle_line_name(line)
-        elseif string.find(line, "@tag %a+") then
+        elseif string.find(line, "@tag") then
             local tag = self:handle_line_tag(line)
             table.insert(self.tags, tag)
         elseif string.find(line, "@p ") then
