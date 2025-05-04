@@ -4,6 +4,9 @@
     margin: 0;
     box-sizing: border-box;
     font-family: 'Courier New', Courier, monospace;
+
+	overscroll-behavior-block: contain;
+	overscroll-behavior-y: none;
 }
 
 body {
