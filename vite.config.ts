@@ -3,9 +3,9 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 // https://vite.dev/config/
 export default defineConfig({
-  root: 'web',
+  root: './web',
   build: {
-    outDir: 'dist',
+    outDir: '../dist',
     emptyOutDir: true, // also necessary
   },
   plugins: [svelte()],

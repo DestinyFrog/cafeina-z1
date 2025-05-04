@@ -1,3 +1,3 @@
 
-export const URL_PREFIX = "http://localhost:8080/api"
+export const URL_PREFIX = import.meta.env.VITE_URL
 export const target = document.getElementById('target')!
