@@ -33,6 +33,26 @@ function windowMouseUp(_event:MouseEvent) {
     is_dragging = false
 }
 
+function touchStart(event:TouchEvent) {
+    offset_x = x - event.touches[0].clientX
+    offset_y = y - event.touches[0].clientY
+
+    is_dragging = true
+}
+
+function windowTouchMove(event:TouchEvent) {
+    if (!is_dragging) return
+
+    if (is_dragging) {
+        x = event.touches[0].clientX + offset_x
+        y = event.touches[0].clientY + offset_y
+    }
+}
+
+function windowTouchEnd(_event:TouchEvent) {
+    is_dragging = false
+}
+
 let thisWindow: Element
 function close() {
     thisWindow.remove()
@@ -42,12 +62,17 @@ function close() {
 <svelte:window
     on:mousemove="{(ev) => windowMouseMove(ev)}"
     on:mouseup="{(ev) => windowMouseUp(ev)}"
+
+    on:touchmove="{(ev) => windowTouchMove(ev)}"
+    on:touchend="{(ev) => windowTouchEnd(ev)}"
     ></svelte:window>
 
 <div bind:this={thisWindow} class="window" style="top: {y}px; left: {x}px;">
 
     <div aria-hidden="true" class="header"
-        onmousedown={(ev) => mouseDown(ev)}>
+        onmousedown={(ev) => mouseDown(ev)}
+        ontouchstart={(ev) => touchStart(ev)}
+        >
         <p class="title">{ title }</p>
         <button class="closer" onclick={close} aria-label="false"></button>
     </div>
