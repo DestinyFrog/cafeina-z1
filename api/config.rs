@@ -3,7 +3,7 @@ use std::env;
 pub struct ApiConfig {
     pub port: u16,
     pub host: String,
-    // pub api_prefix: String
+    pub api_prefix: String
 }
 
 pub struct DbConfig {
@@ -22,8 +22,8 @@ pub fn load_db_config() -> Result<DbConfig, env::VarError> {
 pub fn load_api_config() -> Result<ApiConfig, Box<dyn std::error::Error>> {
     let host: String = env::var("API_HOST")?;
     let port: u16 = env::var("API_PORT")?.parse()?;
-    // let api_prefix: String = env::var("API_PREFIX")?;
-    Ok(ApiConfig { host, port, /*api_prefix*/ })
+    let api_prefix: String = env::var("API_PREFIX")?;
+    Ok(ApiConfig { host, port, api_prefix })
 }
 
 pub fn load_mode() -> Result<String, env::VarError> {
