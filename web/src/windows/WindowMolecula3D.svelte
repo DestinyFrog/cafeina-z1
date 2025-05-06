@@ -1,9 +1,11 @@
 <script lang="ts">
-import { onMount } from "svelte";
-import { Vector3 } from "../lib/util"
-import Window from "../lib/Window.svelte"
-import type Molecula from "../models/Molecula"
-import * as THREE from "three"
+import { onMount } from 'svelte'
+import type Molecula from '../models/Molecula'
+import Window from '../lib/Window.svelte'
+import * as THREE from 'three'
+import { Vector3 } from '../lib/util'
+
+let content: HTMLCanvasElement
 
 let {
     molecula
@@ -11,9 +13,7 @@ let {
     molecula: Molecula
 } = $props()
 
-const proportion = 0.1
-
-let content: HTMLElement
+const proportion = 0.01
 
 class Atom3D {
     color: number
@@ -88,37 +88,47 @@ class Molecula3D {
     }
 }
 
-let scene: THREE.Scene
-let camera: THREE.Camera
-let renderer: THREE.WebGLRenderer
-
 onMount(() => {
-    scene = new THREE.Scene()
-    camera = new THREE.PerspectiveCamera(75, content.clientWidth / content.clientHeight, 0.1, 1000)
-    renderer = new THREE.WebGLRenderer()
+    content.width = 200
+    content.height = 200
 
-    camera.position.z = 10
-    camera.lookAt(0, 0, 0)
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000)
+    let renderer: THREE.WebGLRenderer
 
-    content.appendChild(renderer.domElement)
-    renderer.render(scene, camera)
+    let camera_angle = 0
+    let camera_distance = 20 
+    const camera_acc = 1/2
+
+    camera.position.z = 5
+
+    const animate = () => {
+        camera_angle += camera_acc
+        if (camera_angle > 360) camera_angle = 360 % camera_angle
+        camera.position.x = Math.cos(camera_angle / 180 * Math.PI) * camera_distance
+        camera.position.z = Math.sin(camera_angle / 180 * Math.PI) * camera_distance
+        camera.lookAt(0,0,0)
+
+        renderer.render(scene, camera)
+    };
+
+    const createScene = (el:HTMLCanvasElement) => {
+        renderer = new THREE.WebGLRenderer({ antialias: true, canvas: el })
+        renderer.setAnimationLoop(animate)
+    }
+
+    createScene(content)
 
     molecula.get_z13()
     .then(z13 => {
-        const molecula3d = new Molecula3D(z13)
-        molecula3d.render(scene)
+        const mol = new Molecula3D(z13)
+        camera_distance = mol.max_radius + 6
+        mol.render(scene)
     })
     .catch(console.error)
-})
+});
 </script>
 
 <Window title={molecula.name}>
-    <div class="a" bind:this="{content}"></div>
+    <canvas bind:this="{content}"></canvas>
 </Window>
-
-<style>
-.a {
-    width: 200px;
-    height: 200px;
-}
-</style>
