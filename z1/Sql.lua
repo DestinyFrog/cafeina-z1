@@ -4,7 +4,20 @@ require "z1.Handling"
 
 uuid.set_rng(uuid.rng.urandom())
 
-print("INSERT INTO molecula (uid, name, z1, term)\nVALUES")
+local text = ""
+
+text = text .. [[CREATE TABLE molecula (
+  `id` INTEGER PRIMARY KEY,
+  `uid` TEXT NOT NULL,
+  `name` TEXT NOT NULL,
+  `z1` TEXT DEFAULT NULL,
+  `term` TEXT NOT NULL,
+  `another_names` TEXT DEFAULT '[]'
+);
+
+INSERT INTO molecula (`uid`, `name`, `z1`, `term`, `another_names`)
+VALUES
+]]
 
 local sqls = {}
 for file_name in io.popen('find "examples" -type f'):lines() do
@@ -49,4 +62,15 @@ for file_name in io.popen('find "examples" -type f'):lines() do
     table.insert(sqls, sql)
 end
 
-print( table.concat(sqls, ',') .. ";" )
+text = text .. table.concat(sqls, ',') .. ";"
+
+---@type string
+local out_file_name = arg[1] or "out"
+
+local out_file = io.open(out_file_name, "w")
+if not out_file then
+    Error:new("Problemas ao criar arquivo de saída"):print()
+    os.exit(1)
+end
+out_file:write(text)
+out_file:close()

@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+lua z1/Sql.lua database/table_molecula.sql;
+
 DATABASE="cat.sqlite3";
 
 MIGRATIONS=(
