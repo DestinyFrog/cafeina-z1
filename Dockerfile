@@ -1,7 +1,7 @@
 FROM node:23-alpine3.21 AS front
 WORKDIR /cafeina
 
-ENV VITE_URL=/api
+ENV VITE_URL=/api/v1
 
 COPY web ./web
 COPY package.json .
