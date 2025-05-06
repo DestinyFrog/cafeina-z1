@@ -8,7 +8,8 @@ pub enum FieldType {
     Integer,
     String,
     NullableFloat,
-    NullableInteger
+    NullableInteger,
+    NullableString
 }
 
 pub type Res = HashMap<String, serde_json::Value>;
@@ -37,10 +38,15 @@ impl FieldType {
                     let integer: Option<i64> = row.get_value(idx)?.as_integer().copied();
                     json!(integer)
                 },
+                Self::NullableString => {
+                    let string: Option<String> = row.get_value(idx)?.as_text().clone().cloned();
+                    json!(string)
+                },
             }
         )
     }
 }
+
 pub trait Table {
     fn get_fields() -> Vec<(&'static str, FieldType)>;
 
