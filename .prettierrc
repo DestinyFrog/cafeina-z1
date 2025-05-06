@@ -1,0 +1,19 @@
+{
+  "tabWidth": 4,
+  "useTabs": false,
+  "semi": false,
+  "plugins": [
+    "prettier-plugin-svelte"
+  ],
+  "pluginSearchDirs": [
+    "."
+  ],
+  "overrides": [
+    {
+      "files": "*.svelte",
+      "options": {
+        "parser": "svelte"
+      }
+    }
+  ]
+}
