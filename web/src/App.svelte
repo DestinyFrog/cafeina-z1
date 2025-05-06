@@ -4,6 +4,7 @@
     import Icon from "./lib/Icon.svelte"
     import WindowPeriodicTable from "./windows/WindowPeriodicTable.svelte"
     import WindowBrowser from "./windows/WindowBrowser.svelte"
+    import WindowLinusPauling from "./windows/WindowLinusPauling.svelte"
 </script>
 
 <main>
@@ -17,6 +18,12 @@
         title="Navegador"
         icon="icon_browser.svg"
         action={() => mount(WindowBrowser, { target })}
+    />
+
+    <Icon
+        title="Diagrama de Linus Pauling"
+        icon="icon_linus_pauling.svg"
+        action={() => mount(WindowLinusPauling, { target })}
     />
 </main>
 
