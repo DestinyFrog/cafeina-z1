@@ -2,27 +2,27 @@ import { URL_PREFIX } from "../config"
 import type { Vec2 } from "../lib/util"
 
 export const Category = {
-    "hidrogênio": "#8c0250",
+    hidrogênio: "#8c0250",
     "metal alcalino": "#f5a80b",
     "metal alcalino terroso": "#ff6600",
     "metal de transição": "#970700",
-    "ametal": "#008000",
-    "semimetal": "#aa007a",
+    ametal: "#008000",
+    semimetal: "#aa007a",
     "outros metais": "#ff007f",
-    "halogênio": "#304ee6",
+    halogênio: "#304ee6",
     "gás nobre": "#7525FA",
-    "lantanídeo": "#054f77",
-    "actinídeo": "#4169e1",
-    "desconhecido": "#333333"
+    lantanídeo: "#054f77",
+    actinídeo: "#4169e1",
+    desconhecido: "#333333",
 }
 
 export const Fase = {
-    "S": {name: "sólido"},
-    "L": {name: "líquido"},
-    "G": {name: "gasoso"}
+    S: { name: "sólido" },
+    L: { name: "líquido" },
+    G: { name: "gasoso" },
 }
 
-export type PeriodicTableFormats = 'normal' | 'extended'
+export type PeriodicTableFormats = "normal" | "extended"
 
 export interface ElementPayload {
     atomic_number: number
@@ -96,8 +96,8 @@ class Element implements ElementPayload {
     }
 
     get neutrons(): number {
-        if ( !this.atomic_mass ) return this.atomic_number
-        return Math.floor(this.atomic_mass) - this.atomic_number 
+        if (!this.atomic_mass) return this.atomic_number
+        return Math.floor(this.atomic_mass) - this.atomic_number
     }
 
     get fase_name() {
@@ -108,14 +108,15 @@ class Element implements ElementPayload {
         let x = this.xpos
         let y = this.ypos
 
-        switch(mode) {
+        switch (mode) {
             case "extended":
-                if (this.category == "actinídeo" || this.category == "lantanídeo") {
+                if (
+                    this.category == "actinídeo" ||
+                    this.category == "lantanídeo"
+                ) {
                     x--
                     y -= 3
-                }
-                else if (this.xpos > 2)
-                    x += 14
+                } else if (this.xpos > 2) x += 14
                 break
         }
 
@@ -125,7 +126,7 @@ class Element implements ElementPayload {
     static async get_many() {
         const res = await fetch(`${URL_PREFIX}/element`)
         const data = (await res.json()) as ElementPayload[]
-        return data.map(payload => new Element(payload))
+        return data.map((payload) => new Element(payload))
     }
 }
 

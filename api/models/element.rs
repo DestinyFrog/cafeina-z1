@@ -21,11 +21,14 @@ impl Table for Element {
             ("xpos",                        FieldType::Integer),
             ("ypos",                        FieldType::Integer),
             ("layers",                      FieldType::Json),
-            ("electronic_configuration",    FieldType::String),
+            ("eletronic_configuration",     FieldType::String),
             ("oxidation_state",             FieldType::Json),
             ("discovery_year",              FieldType::NullableInteger),
             ("discovery",                   FieldType::Json),
-            ("another_names",               FieldType::Json)
+            ("another_names",               FieldType::Json),
+            ("latin_name",                  FieldType::NullableString),
+            ("name_meaning",                FieldType::NullableString)
+        
         ]
     }
 }

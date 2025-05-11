@@ -26,14 +26,14 @@ fn router() -> Router {
     let static_files = ServeDir::new("dist");
 
     Router::new()
-        .route(&path("/ping"), get(ping))
-        .route(&path("/element"), get(route_element::get_elements))
-        .route(&path("/element/{atomic_number}"), get(route_element::get_element_by_atomic_number))
-        .route(&path("/molecula"), get(route_molecula::get_all))
-        .route(&path("/molecula/{uid}"), get(route_molecula::get_molecula_by_uid))
-        .route(&path("/molecula/{uid}/view"), get(route_molecula::get_view_svg))
-        .route(&path("/mix/{term}"), get(route_molecula::get_molecula_by_term))
-        .route(&path("/search/{term}"), get(route_search::search_by_term))
+        .route(&path("/ping"),                      get(ping))
+        .route(&path("/element"),                   get(route_element::get_elements))
+        .route(&path("/element/{atomic_number}"),   get(route_element::get_element_by_atomic_number))
+        .route(&path("/molecula"),                  get(route_molecula::get_all))
+        .route(&path("/molecula/{uid}"),            get(route_molecula::get_molecula_by_uid))
+        .route(&path("/molecula/{uid}/view"),       get(route_molecula::get_view_svg))
+        .route(&path("/mix/{term}"),                get(route_molecula::get_molecula_by_term))
+        .route(&path("/search/{term}"),             get(route_search::search_by_term))
 
         .layer(CorsLayer::permissive())
         .fallback_service(static_files)

@@ -1,29 +1,30 @@
 <script lang="ts">
-import { mount } from "svelte"
-import { target } from "../config"
-import { capitalize } from "../lib/util"
-import Window from "../lib/Window.svelte"
-import type Molecula from "../models/Molecula"
-import WindowMolecula3D from "./WindowMolecula3D.svelte"
+    import { mount } from "svelte"
+    import { target } from "../config"
+    import { capitalize } from "../lib/util"
+    import Window from "../lib/Window.svelte"
+    import type Molecula from "../models/Molecula"
+    import WindowMolecula3D from "./WindowMolecula3D.svelte"
 
-let svg: string|null = $state(null)
+    let svg: string | null = $state(null)
 
-let {
+    let {
+        molecula,
+    }: {
+        molecula: Molecula
+    } = $props()
+
     molecula
-}: {
-    molecula: Molecula
-} = $props()
+        .get_svg()
+        .then((svg_content) => (svg = svg_content))
+        .catch(console.error)
 
-molecula.get_svg()
-.then(svg_content => svg = svg_content)
-.catch(console.error)
-
-function click() {
-    mount( WindowMolecula3D, { target, props: { molecula } } )
-}
+    function click() {
+        mount(WindowMolecula3D, { target, props: { molecula } })
+    }
 </script>
 
-<Window title={ capitalize( molecula.name ) }>
+<Window title={capitalize(molecula.name)}>
     {#if svg}
         {@html svg}
     {/if}

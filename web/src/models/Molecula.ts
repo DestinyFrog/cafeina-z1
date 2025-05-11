@@ -9,7 +9,7 @@ class Molecula implements MoleculaPayload {
     public uid: string
     public name: string
 
-    constructor(payload:MoleculaPayload) {
+    constructor(payload: MoleculaPayload) {
         this.uid = payload.uid
         this.name = payload.name
     }
@@ -21,14 +21,16 @@ class Molecula implements MoleculaPayload {
     }
 
     async get_z13(): Promise<string> {
-        const res = await fetch(`${URL_PREFIX}/molecula/${this.uid}/view?mode=z13`)
+        const res = await fetch(
+            `${URL_PREFIX}/molecula/${this.uid}/view?mode=z13`,
+        )
         const z13 = await res.text()
         return z13
     }
 
-    static async search_by_term(term:string) {
+    static async search_by_term(term: string) {
         const res = await fetch(`${URL_PREFIX}/mix/${term}`)
-        const data = await res.json() as MoleculaPayload
+        const data = (await res.json()) as MoleculaPayload
         return new Molecula(data)
     }
 }
