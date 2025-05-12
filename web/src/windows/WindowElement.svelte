@@ -12,8 +12,7 @@
 
 <Window
     title={capitalize(element.oficial_name)}
-    background_color={element.category_color}
->
+    background_color={element.category_color}>
     <div>
         <div class="container">
             <p class="atomic-number">{element.atomic_number}</p>

@@ -62,7 +62,7 @@
             {#each l_elements as element}
                 <li class="recomendation">
                     <button onclick={() => open_element(element)}>
-                        {element.oficial_name}
+                        {element.atomic_number}. {element.oficial_name} ({element.symbol})
                     </button>
                 </li>
             {/each}

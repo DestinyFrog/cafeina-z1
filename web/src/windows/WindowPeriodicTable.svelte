@@ -20,7 +20,7 @@
     })
 </script>
 
-<Window title="Tabela Periódica">
+<Window title="Tabela Periódica" mixer={true}>
     <ul class="periodic-table">
         {#each elements as element}
             <li

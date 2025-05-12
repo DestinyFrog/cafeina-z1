@@ -16,7 +16,7 @@
 
     molecula
         .get_svg()
-        .then((svg_content) => (svg = svg_content))
+        .then(svg_content => svg = svg_content)
         .catch(console.error)
 
     function click() {

@@ -1,10 +1,16 @@
 <script lang="ts">
+    import { generateUUID } from "three/src/math/MathUtils.js"
+    import { addUuid, mixerObjs } from "./Mixer"
+
     let {
         title,
         x: start_x = 10,
         y: start_y = 10,
         background_color = "white",
+        mixer = false
     } = $props()
+
+    let unique_id = generateUUID()
 
     let is_dragging = false
 
@@ -18,6 +24,15 @@
         offset_y = y - event.clientY
 
         is_dragging = true
+
+        if (mixer) {
+            addUuid(unique_id, {
+        x,
+        y,
+        width: thisWindow.clientWidth,
+        height: thisWindow.clientHeight,
+    })
+        }
     }
 
     function windowMouseMove(event: MouseEvent) {
@@ -31,6 +46,7 @@
 
     function windowMouseUp(_event: MouseEvent) {
         is_dragging = false
+        delete(mixerObjs[unique_id])
     }
 
     function touchStart(event: TouchEvent) {
